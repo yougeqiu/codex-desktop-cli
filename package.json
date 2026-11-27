@@ -1,0 +1,39 @@
+{
+  "name": "codex-desktop-cli",
+  "version": "1.0.0",
+  "description": "Zero-hijack Windows CLI and Agent Skill to dispatch, steer, and monitor Codex Desktop sessions live via its shared app-server.",
+  "type": "module",
+  "license": "MIT",
+  "author": "yougeqiu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yougeqiu/codex-desktop-cli.git"
+  },
+  "bin": {
+    "codexctl": "./scripts/codexctl.mjs"
+  },
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE",
+    "references/",
+    "scripts/"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check scripts/lib/client.mjs && node --check scripts/codexctl.mjs && node --check scripts/codex-call.mjs && node --check scripts/codex-steer.mjs && node --check scripts/codex-autoapprove.mjs"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "codex",
+    "codex-desktop",
+    "openai",
+    "app-server",
+    "cli",
+    "agent-skill",
+    "windows"
+  ]
+}
