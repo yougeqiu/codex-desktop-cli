@@ -21,7 +21,8 @@ Commands:
        [--model M] [--effort E] [--tier T] [--name N]
        [--approval A] [--attach|--no-attach] [--wait] [--timeout S]
                                           Start or continue a thread (auto-attaches detached Desktop)
-  steer --thread ID --text T [--turn ID]  Inject input into an active turn
+  steer --thread ID (--text T|--file F) [--turn ID]
+                                          Inject input into an active turn
   interrupt --thread ID                   Interrupt active turn on a thread
   read --thread ID [--all]                Read transcript (--all prints full untruncated messages)
   name --thread ID --name N               Rename a thread
@@ -226,7 +227,8 @@ async function main() {
     }
     case 'steer': {
       const threadId = options.thread ? String(options.thread) : null;
-      if (!threadId || !options.text) throw new Error('--thread and --text required');
+      const text = options.text ?? (options.file ? fs.readFileSync(String(options.file), 'utf8').trim() : null);
+      if (!threadId || !text) throw new Error('--thread and (--text or --file) required');
       let expectedTurnId = options.turn ? String(options.turn) : null;
       if (!expectedTurnId) {
         const turns = await client.call('thread/turns/list', { threadId, limit: 5, sortDirection: 'desc', itemsView: 'notLoaded' });
@@ -234,7 +236,7 @@ async function main() {
         if (!active) throw new Error('no active turn to steer (use send when idle)');
         expectedTurnId = active.id;
       }
-      const r = await client.call('turn/steer', { threadId, expectedTurnId, input: userInput(String(options.text)) });
+      const r = await client.call('turn/steer', { threadId, expectedTurnId, input: userInput(String(text)) });
       console.log('steered:', JSON.stringify(r).slice(0, 200));
       break;
     }

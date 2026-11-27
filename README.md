@@ -14,7 +14,7 @@ Keep opening Codex Desktop from your normal Windows shortcut. Whenever you or an
 |---|---|---|---|
 | Official `codex` CLI | Standalone terminal sessions | Minimal, terminal-only | Separate unless manually wired with `--remote` |
 | [LazyGon/codex-desktop-control](https://github.com/LazyGon/codex-desktop-control) | Full persistent desktop + Discord + TUI shim setup | ~110+ files, WinForms GUI, User `PATH` shim (`codex.cmd`), edits `config.toml`, caches binaries | Yes (full control plane) |
-| **`codex-desktop-cli` (This Repo)** | **AI Agents & devs dispatching tasks straight into Codex Desktop** | **Zero external deps, no `PATH` hijack, no `config.toml` edits, 6 scripts** | **Yes — one-time auto-attach + live `projectId` binding** |
+| **`codex-desktop-cli` (This Repo)** | **AI Agents & devs dispatching tasks straight into Codex Desktop** | **Zero external deps, no `PATH` hijack, no `config.toml` edits, 5 scripts** | **Yes — one-time auto-attach + live `projectId` binding** |
 
 ### Core Design Choices
 - **No Global `PATH` Hijack**: Your native `codex` CLI stays untouched. Only explicit `codexctl` commands talk to the shared `ws://127.0.0.1:<port>` backend.
@@ -48,7 +48,7 @@ npm link
 node scripts/codexctl.mjs --help
 ```
 
-Or drop this repository directly into your Agent Skills directory (e.g., `~/.agents/skills/codex-desktop`) — `SKILL.md` and `references/` are already wired at the root.
+Or drop this repository directly into your Agent Skills directory (e.g., `~/.agents/skills/codex-desktop`) — `SKILL.md` is already wired at the root.
 
 ### 2. Probe & Dispatch Your First Task
 
@@ -75,7 +75,8 @@ codexctl models [--hidden]                       List available models & support
 codexctl send --text T|--file F [--thread ID | --new [--cwd DIR]]
               [--model M] [--effort E] [--tier T] [--name N]
               [--approval A] [--attach|--no-attach] [--wait] [--timeout S]
-codexctl steer --thread ID --text T [--turn ID]  Steer an active turn (auto-resolves turnId)
+codexctl steer --thread ID (--text T|--file F) [--turn ID]
+                                                 Steer an active turn (auto-resolves turnId)
 codexctl interrupt --thread ID                   Interrupt an active turn
 codexctl read --thread ID [--all]                Read transcript (--all disables 2000-char truncation)
 codexctl name --thread ID --name N               Rename a thread
@@ -87,7 +88,6 @@ codexctl name --thread ID --name N               Rename a thread
 - `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart-desktop.ps1 [-Port 8798] [-Force]` — Attach Codex Desktop to the shared server (skips if already attached unless `-Force` is set).
 - `node scripts/codex-call.mjs <method> [paramsJson]` — Raw JSON-RPC helper for any un-wrapped `app-server` method.
 - `node scripts/codex-autoapprove.mjs` — Background auto-approval listener for legacy threads without `approvalPolicy: "never"`.
-- `node scripts/codex-steer.mjs <threadId> <expectedTurnId> <textFile>` — File-based steer compatibility helper.
 
 ---
 
@@ -110,7 +110,6 @@ npm test
 ## Acknowledgments
 
 - Shared `app-server` WebSocket architecture inspired by [LazyGon/codex-desktop-control](https://github.com/LazyGon/codex-desktop-control).
-- Behavioral prompt reference in [`references/cure-gpt-behavior.md`](references/cure-gpt-behavior.md) adapted from `@_kaichen`'s [cure-gpt-behavior gist](https://gist.github.com/kaichen/64d5fdce7eaefa1d377a874d79ee26d9).
 
 ## License
 

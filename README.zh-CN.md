@@ -14,7 +14,7 @@
 |---|---|---|---|
 | 官方 `codex` CLI | 终端独立跑任务 | 轻量，纯终端 | 与桌面端隔离，除非手动配 `--remote` |
 | [LazyGon/codex-desktop-control](https://github.com/LazyGon/codex-desktop-control) | 长期挂机的完整桌面 + Discord 控制面板 | ~110+ 文件、WinForms GUI、装用户 `PATH` shim 劫持 `codex`、改写 `config.toml` | 是 |
-| **`codex-desktop-cli`（本项目）** | **AI Agent 派活 / 开发者脚本联动桌面端** | **零 npm 依赖、不改 `PATH`、不改 `config.toml`、仅 6 个核心脚本** | **是（按需自动挂载 + 即时项目绑定）** |
+| **`codex-desktop-cli`（本项目）** | **AI Agent 派活 / 开发者脚本联动桌面端** | **零 npm 依赖、不改 `PATH`、不改 `config.toml`、仅 5 个核心脚本** | **是（按需自动挂载 + 即时项目绑定）** |
 
 ### 核心特性
 - **不劫持系统命令**：保持原版 `codex` CLI 与 `~/.codex/config.toml` 原样不动，只有显式执行 `codexctl` 时才接入共享 `ws://127.0.0.1:8798` 后端。
@@ -48,7 +48,7 @@ npm link
 node scripts/codexctl.mjs --help
 ```
 
-如作为 Agent Skill 使用（Antigravity / Claude Code 等），直接将本仓库放进 `~/.agents/skills/codex-desktop` 即可，根目录已包含规范的 `SKILL.md` 与 `references/`。
+如作为 Agent Skill 使用（Antigravity / Claude Code 等），直接将本仓库放进 `~/.agents/skills/codex-desktop` 即可，根目录已包含规范的 `SKILL.md`。
 
 ### 2. 日常使用示例
 
@@ -72,7 +72,8 @@ codexctl models [--hidden]                       列出本机可用模型与推�
 codexctl send --text T|--file F [--thread ID | --new [--cwd DIR]]
               [--model M] [--effort E] [--tier T] [--name N]
               [--approval A] [--attach|--no-attach] [--wait] [--timeout S]
-codexctl steer --thread ID --text T [--turn ID]  向进行中的 turn 插话（自动获取 turnId）
+codexctl steer --thread ID (--text T|--file F) [--turn ID]
+                                                 向进行中的 turn 插话（自动获取 turnId）
 codexctl interrupt --thread ID                   打断进行中的 turn
 codexctl read --thread ID [--all]                查看对话记录（--all 不截断输出）
 codexctl name --thread ID --name N               重命名会话
@@ -90,5 +91,4 @@ npm test
 ## 致谢与协议
 
 - 共享 `app-server` 思路参考自 [LazyGon/codex-desktop-control](https://github.com/LazyGon/codex-desktop-control)。
-- [`references/cure-gpt-behavior.md`](references/cure-gpt-behavior.md) 行为矫正提示词源自 `@_kaichen` 的 [Gist](https://gist.github.com/kaichen/64d5fdce7eaefa1d377a874d79ee26d9)。
 - 基于 [MIT License](LICENSE) 开源。

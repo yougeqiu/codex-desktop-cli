@@ -10,7 +10,7 @@ description: >
 
 # codex-desktop
 
-用命令行直接操控本机 Codex 桌面端，同时保留你从 Windows 图标正常打开的习惯。原理：把安装包内嵌的
+用命令行直接操控本机 Codex 桌面端，同时保留从桌面图标正常打开的使用习惯。原理：把安装包内嵌的
 `app\resources\codex.exe` 以 `app-server --listen ws://127.0.0.1:<port>` 单独拉起成共享后端，再带
 `CODEX_APP_SERVER_WS_URL` 通过 WMI（`Win32_Process.Create`）脱离父进程树启动 `ChatGPT.exe`——此后桌面端 UI 与
 CLI 共享同一总机和 `~\.codex` 会话状态，建新会话时直接匹配 `project/list` 传入 `projectId`，侧栏实时可见。
@@ -25,8 +25,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\start-server.ps1 -Po
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\restart-desktop.ps1 -Port 8798
 ```
 
-- 平时用户直接从图标打开桌面端时，首次 `codexctl send` 会检测到桌面端处于脱钩私有模式，自动调用 `restart-desktop.ps1` **仅重拉一次**完成挂载；之后窗口保持常驻打开、全程实时看进度，不会再打断。
-- 若之前旧进程残留无窗口，脚本会清净整棵 `ChatGPT` 与附属 `codex` 树后再拉起，并用 `tasklist /V` 校验真实窗口标题出现、校验 UTC/本地目录的 `codex-desktop-*-t0-*.log` 确认 `transportKind=websocket` + `next=connected`。
+- 平时直接从图标打开桌面端时，首次 `codexctl send` 会检测到桌面端处于脱钩私有模式，自动调用 `restart-desktop.ps1` **仅重拉一次**完成挂载；之后窗口保持打开、全程实时看进度，不再打断。
+- 若旧进程残留无窗口，脚本会清净整棵 `ChatGPT` 与附属 `codex` 树后再拉起，并用 `tasklist /V` 校验真实窗口标题出现、校验 UTC/本地目录的 `codex-desktop-*-t0-*.log` 确认 `transportKind=websocket` + `next=connected`。
 
 ## 用法（node scripts/codexctl.mjs）
 
@@ -44,29 +44,18 @@ node scripts/codexctl.mjs name --thread <id> --name "标题"
 
 - `--wait` 阻塞到 `turn/completed` 并打印模型回复；`--timeout <秒>`（默认 600）。
 - `--attach` 强制确保桌面窗口拉起并挂载；`--no-attach` 跳过自动拉起/挂载。
-- `steer` 会自动查询进行中的 `expectedTurnId`（也可用 `--turn <id>` 显式指定）；空闲会话请用 `send`。
+- `steer` 支持 `--text` 或 `--file`，会自动查询进行中的 `expectedTurnId`（也可用 `--turn <id>` 指定）；空闲会话请用 `send`。
 - 端点解析顺序：`--url` > `CODEX_APP_SERVER_WS_URL` > `~/.codex-desktop/state.json` > `ws://127.0.0.1:8798`。
 
-## 派活与验收规范
+## 派活与验收
 
 - **验收规则**：tool 返回 success 不代表完成。派活时加 `--wait` 等到 `turn/completed`（`status=completed`），再用 `read --all` 核对真实聊天记录与产物，不直接复述模型自称"已改好"。
 - **侧栏项目匹配**：`send --new` 会先调 `project/list` 解析 `roots[].path`（精确匹配优先、其次最长父目录匹配），把 `projectId` 直接带入 `thread/start`。若 `--cwd` 不在桌面端已添加的项目列表里，侧栏可能暂时看不到（控制台会提示 WARN）。
-
-## 模型与推理档（常见参考）
-
-```bash
-node scripts/codexctl.mjs send --thread <id> --text "..." --model gpt-6.2-sol --effort high --tier priority
-```
-
-设置通过 `thread/settings/update` 写入会话（一次设置后续 turn 均生效），默认附带 `approvalPolicy=never` 与 `dangerFullAccess`：
-- 运行 `node scripts/codexctl.mjs models` 获取当前桌面端完整可用模型与支持的 `efforts`（如 `low` / `medium` / `high` / `xhigh` / `max` / `ultra`）。
-- 加速档传 `--tier priority`（对应界面 `fast` 模式）。
-- 针对复杂编码/多轮排查，可将行为矫正提示词（[references/cure-gpt-behavior.md](references/cure-gpt-behavior.md)，源自 `kaichen/cure-gpt-behavior` Gist）放入目标项目的 `AGENTS.md`。
+- **模型与档位**：运行 `node scripts/codexctl.mjs models` 获取本机完整可用模型与推理档；加速档传 `--tier priority`。设置通过 `thread/settings/update` 写入会话（默认附带 `approvalPolicy=never` 与 `dangerFullAccess`）。
 
 ## 辅助脚本
 
 - `node scripts/codex-call.mjs <method> [paramsJson]`：通用 JSON-RPC 调用口，直调未封装协议（如 `project/list`、`thread/metadata/update`）。
-- `node scripts/codex-steer.mjs <threadId> <expectedTurnId> <textFile>`：从文件读取文本进行 `turn/steer` 的兼容入口。
 - `node scripts/codex-autoapprove.mjs`：常驻后台监听服务端审批请求并自动放行（用于无法切 `approvalPolicy=never` 的旧会话兜底）。
 
 ## 边界与恢复

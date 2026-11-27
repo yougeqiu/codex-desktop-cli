@@ -17,12 +17,11 @@
     "README.md",
     "README.zh-CN.md",
     "LICENSE",
-    "references/",
     "scripts/"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "check": "node --check scripts/lib/client.mjs && node --check scripts/codexctl.mjs && node --check scripts/codex-call.mjs && node --check scripts/codex-steer.mjs && node --check scripts/codex-autoapprove.mjs"
+    "check": "node --check scripts/lib/client.mjs && node --check scripts/codexctl.mjs && node --check scripts/codex-call.mjs && node --check scripts/codex-autoapprove.mjs"
   },
   "engines": {
     "node": ">=22.0.0"
