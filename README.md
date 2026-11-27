@@ -13,6 +13,7 @@ Keep opening Codex Desktop from your normal Windows shortcut. Whenever you or an
 | Tool | Best For | Footprint & Intrusion | Live Desktop UI Sync |
 |---|---|---|---|
 | Official `codex` CLI | Standalone terminal sessions | Minimal, terminal-only | Separate unless manually wired with `--remote` |
+| [herdr](https://github.com/herdrdev/herdr) | Multi-pane TUI orchestrator for terminal CLI agents (Codex CLI, Claude Code, Devin) | Rust daemon + ConPTY (`herdr.exe`), screen detection & keystroke injection (`HERDR_ENV=1`) | No (manages terminal TUI panes, not the Codex Desktop GUI) |
 | [LazyGon/codex-desktop-control](https://github.com/LazyGon/codex-desktop-control) | Full persistent desktop + Discord + TUI shim setup | ~110+ files, WinForms GUI, User `PATH` shim (`codex.cmd`), edits `config.toml`, caches binaries | Yes (full control plane) |
 | **`codex-desktop-cli` (This Repo)** | **AI Agents & devs dispatching tasks straight into Codex Desktop** | **Zero external deps, no `PATH` hijack, no `config.toml` edits, 5 scripts** | **Yes — one-time auto-attach + live `projectId` binding** |
 

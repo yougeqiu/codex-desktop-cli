@@ -13,6 +13,7 @@
 | 工具 | 适用场景 | 侵入性与体积 | 桌面端实时同屏 |
 |---|---|---|---|
 | 官方 `codex` CLI | 终端独立跑任务 | 轻量，纯终端 | 与桌面端隔离，除非手动配 `--remote` |
+| [herdr](https://github.com/herdrdev/herdr) | 多窗格并行管理终端版 CLI Agent（Codex CLI、Claude Code、Devin 等） | Rust 守护进程 + ConPTY（`herdr.exe`），依赖屏幕识别与模拟按键（需 `HERDR_ENV=1`） | 否（管理终端 TUI 窗格，不管 Codex Desktop 图形端） |
 | [LazyGon/codex-desktop-control](https://github.com/LazyGon/codex-desktop-control) | 长期挂机的完整桌面 + Discord 控制面板 | ~110+ 文件、WinForms GUI、装用户 `PATH` shim 劫持 `codex`、改写 `config.toml` | 是 |
 | **`codex-desktop-cli`（本项目）** | **AI Agent 派活 / 开发者脚本联动桌面端** | **零 npm 依赖、不改 `PATH`、不改 `config.toml`、仅 5 个核心脚本** | **是（按需自动挂载 + 即时项目绑定）** |
 
